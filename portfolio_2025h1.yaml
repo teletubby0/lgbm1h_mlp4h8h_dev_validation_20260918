@@ -1,0 +1,56 @@
+schema_version: 1
+name: lgbm1h_mlp4h8h_equal_r50_selected
+signal:
+  manifest: /data/features/alpha/releases/lgbm1h_mlp4h8h_selected_2025H1/ensemble/signal_manifest.json
+  components:
+  - lgbm_ret1h
+  - mlp_ret4h_ema_epoch001
+  - mlp_ret8h_ema_epoch001
+  component_weights:
+  - 0.3333333333333333
+  - 0.3333333333333333
+  - 0.3333333333333333
+  normalization: valid_only_cszscore_each_then_mean_then_valid_only_cszscore
+backtest_contract:
+  start_date: 20250701
+  end_date: 20260131
+  rebalance_bars: 1
+  signal_horizon_bars: 48
+  volume_lookback_bars: 48
+  planning_participation_rate: 0.02
+  posterior_participation_rate: 0.05
+  realized_cost_bps: 10.0
+  funding_mode: apply
+  max_position_volume_participation_rate: 0.05
+  position_volume_lookback_bars: 48
+  max_net_weight: 0.1
+  max_turnover_weight: 1.0
+  net_penalty: 5.0
+  invalid_position_policy: instant-last-valid
+  invalid_grace_bars: 3
+  invalid_exit_bars: 48
+  invalid_hold_signal_threshold: 0.5
+  forced_liquidation_extra_cost_bps: 10.0
+  volatility_lookback_bars: 288
+  volatility_horizon_bars: 48
+  min_volatility_observations: 96
+  missing_volatility_policy: budget
+  risk_slack_penalty: 100.0
+selected_books:
+- book_size_usd: 500000
+  candidate_pool_each_side: 40
+  max_name_weight: 0.02
+  turnover_cost: 0.8
+  risk_budget_4h_bps: 450.0
+- book_size_usd: 5000000
+  candidate_pool_each_side: 75
+  max_name_weight: 0.01
+  turnover_cost: 0.65
+  risk_budget_4h_bps: 350.0
+- book_size_usd: 20000000
+  candidate_pool_each_side: 100
+  max_name_weight: 0.015
+  turnover_cost: 0.65
+  risk_budget_4h_bps: 0.0
+selection_result: /data/features/alpha/releases/lgbm1h_mlp4h8h_selected_2025H1/optimizer/portfolio_tuning_selected_relaxed_name_caps_v1.json
+backup: /data/features/alpha/releases/lgbm1h_mlp4h8h_selected_2025H1

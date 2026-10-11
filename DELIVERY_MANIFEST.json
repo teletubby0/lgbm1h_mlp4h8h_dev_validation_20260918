@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-09-18T03:14:09.575738+00:00",
+  "ensemble_contract": {
+    "components": [
+      "lgbm_ret1h",
+      "mlp_ret4h_ema",
+      "mlp_ret8h_ema"
+    ],
+    "normalization": "valid_only_cszscore_each_then_mean_then_valid_only_cszscore",
+    "weights": [
+      0.3333333333333333,
+      0.3333333333333333,
+      0.3333333333333333
+    ]
+  },
+  "versions": {
+    "2025h1": {
+      "train_window": [
+        "2024-11-30",
+        "2025-06-30"
+      ],
+      "files": [
+        "lgbm_ret1h_2025h1.txt",
+        "mlp_ret4h_ema_2025h1.onnx",
+        "mlp_ret8h_ema_2025h1.onnx",
+        "portfolio_2025h1.yaml"
+      ]
+    },
+    "2025h2": {
+      "train_window": [
+        "2024-11-30",
+        "2025-12-31"
+      ],
+      "fixed_oos_window": [
+        "2026-01-01",
+        "2026-01-31"
+      ],
+      "files": [
+        "lgbm_ret1h_2025h2.txt",
+        "mlp_ret4h_ema_2025h2.onnx",
+        "mlp_ret8h_ema_2025h2.onnx",
+        "portfolio_2025h2.yaml"
+      ]
+    }
+  },
+  "shared_factor_inventory": "alpha_inventory_1111_strict.yaml",
+  "artifacts": [
+    {
+      "file": "lgbm_ret1h_2025h1.txt",
+      "source": "/data/features/alpha/releases/lgbm1h_mlp4h8h_selected_2025H1/models/lgbm_ret1h/model.txt",
+      "bytes": 2765838,
+      "sha256": "321980ddb4a7fdd883b244bf37fd67afe8d4f91e39cf5dc642a93e37372dcc4d"
+    },
+    {
+      "file": "mlp_ret4h_ema_2025h1.onnx",
+      "source": "/data/features/alpha/releases/lgbm1h_mlp4h8h_selected_2025H1/models/mlp_ret4h/model_ema.onnx",
+      "bytes": 1297104,
+      "sha256": "2b94a1203fd4fb1382b7fc7bbc3f427c915b0d8e73629ce5a14639c316febe67"
+    },
+    {
+      "file": "mlp_ret8h_ema_2025h1.onnx",
+      "source": "/data/features/alpha/releases/lgbm1h_mlp4h8h_selected_2025H1/models/mlp_ret8h/model_ema.onnx",
+      "bytes": 1297104,
+      "sha256": "5f656a54f942b5810d7d85aa3f8742cba3abaf5c29e3fbc21f27e0d5d9ff8107"
+    },
+    {
+      "file": "lgbm_ret1h_2025h2.txt",
+      "source": "/data/features/alpha/models/lgbm1h_mlp4h8h_rolling_train20241130_20251231_oos20260101_20260131_v1/models/lgbm_ret1h/model.txt",
+      "bytes": 2751515,
+      "sha256": "fbf28abdd9ae64156c3baa5c5286d8dba33dd04c6a4a29a7cde75fbd70ca77e7"
+    },
+    {
+      "file": "mlp_ret4h_ema_2025h2.onnx",
+      "source": "/data/features/alpha/models/lgbm1h_mlp4h8h_rolling_train20241130_20251231_oos20260101_20260131_v1/models/mlp_ret_4h/model_ema.onnx",
+      "bytes": 1297104,
+      "sha256": "a82246c60f18e39692cce75702a2d66942bf913285e1c769478f9b37c296a01d"
+    },
+    {
+      "file": "mlp_ret8h_ema_2025h2.onnx",
+      "source": "/data/features/alpha/models/lgbm1h_mlp4h8h_rolling_train20241130_20251231_oos20260101_20260131_v1/models/mlp_ret_8h/model_ema.onnx",
+      "bytes": 1297104,
+      "sha256": "b89bc1d9b22f13c3abf264103b3292e4e0bf3ee3bf43ff67be2744ae102ab0dd"
+    },
+    {
+      "file": "portfolio_2025h1.yaml",
+      "source": "/data/features/alpha/releases/lgbm1h_mlp4h8h_selected_2025H1/release_configs/portfolio_selected_2025H1.yaml",
+      "bytes": 1775,
+      "sha256": "026ef58c3873aadb7f6b9f9f02109c77a9906574829b6bb85647a950171d6df4"
+    },
+    {
+      "file": "portfolio_2025h2.yaml",
+      "source": "/data/features/alpha/models/lgbm1h_mlp4h8h_rolling_train20241130_20251231_oos20260101_20260131_v1/configs/portfolio_rolling_train2025_candidate.yaml",
+      "bytes": 2080,
+      "sha256": "364cb453eba83127f0ad0d237d62e9c956c79f7fc9e0d60ebefab56a204cdf97"
+    },
+    {
+      "file": "alpha_inventory_1111_strict.yaml",
+      "source": "/data/features/alpha/releases/lgbm1h_mlp4h8h_selected_2025H1/configs/alpha_inventory_1111_strict.yaml",
+      "bytes": 357771,
+      "sha256": "206c5f5351e765d604290257bf20da64e6fe3131d08b0918db0adfd7e9c58d34"
+    }
+  ]
+}

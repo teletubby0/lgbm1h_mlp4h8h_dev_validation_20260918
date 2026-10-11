@@ -1,0 +1,111 @@
+runtime:
+  max_history: 864
+  poll_interval_s: 0.01
+  allow_sequence_gap: false
+  max_stale_ms: 900000
+  expected_bar_interval_us: 300000000
+  canonical_metadata: /data/indicator/prod_v1_bar_5m/concat/2024-08-01_2026-01-31.metadata.json
+  prewarm:
+    canonical_parquet: /data/indicator/prod_v1_bar_5m/concat/2024-08-01_2026-01-31.parquet
+    metadata: /data/indicator/prod_v1_bar_5m/concat/2024-08-01_2026-01-31.metadata.json
+    state_anchor_day: 2024-11-28
+    end_day: 2026-01-31
+    chunk_days: 1
+    max_cpu_threads: 16
+    max_rss_gib: 62.0
+
+shm:
+  bar_indicator_manifest: /dev/shm/teletubbies_selected_5m/bar_indicator.shm.json
+  signal_manifest: /dev/shm/teletubbies_selected_5m/bar_signal.shm.json
+  model_manifest: /dev/shm/teletubbies_selected_5m/bar_model.shm.json
+  portfolio_manifest: /dev/shm/teletubbies_selected_5m/bar_portfolio.shm.json
+  position_manifest: /dev/shm/teletubbies_selected_5m/position.shm.json
+  target_position_manifest: /dev/shm/teletubbies_selected_5m/target_position.shm.json
+
+stages:
+  signal:
+    output:
+      parquet_mirror:
+        root_dir: /data/features/alpha/online_selected_pipeline_5m
+        queue_size: 64
+        batch_bars: 12
+        compression: zstd
+    modules:
+      - name: prod_v1
+        class: teletubbies_py.bar_signal.examples:ProdV15mBarFeatureSet
+      - name: kdata
+        class: teletubbies_py.bar_signal.examples:KDataBarFeatureSet
+        params:
+          output_columns: [open, high, low, close, vwap, valid, trade_amt]
+      - name: alpha_all_1111
+        class: teletubbies_py.bar_signal.alpha:AlphaExpressionSignal
+        params:
+          expressions_file: /home/kemove/code/teletubbies/teletubbies-alpha/results/factors/alpha_inventory_1111_strict.yaml
+          input_columns_from: /home/kemove/code/teletubbies/teletubbies-alpha/results/factors/alpha_inventory_1111_strict.yaml
+          input_stage: bar+signal
+          derived_input_stage: signal
+          execution: streaming
+          accumulation: fast
+          num_threads: 16
+          output_normalization: cszscore
+          valid_column: valid
+          cszscore_min_count: 2
+          cszscore_eps: 1.0e-12
+          output_clip_abs: 20.0
+          reset_on_day: false
+          lookback: 864
+          num_tis: 288
+          require_streamable: true
+
+  model:
+    output:
+      parquet_mirror:
+        root_dir: /data/features/alpha/online_selected_pipeline_5m
+        queue_size: 64
+        batch_bars: 12
+        compression: zstd
+    modules:
+      - name: selected_three_model_ensemble
+        class: teletubbies_py.bar_model.ensemble:LgbmMlpEnsembleModel
+        params:
+          lgbm_model_path: /data/features/alpha/models/lgbm_ret1h_csdemean_l512_lr0p05_bin63_r50_train20241130_20250630_eval2025q3_v1/model.txt
+          mlp_ret4h_path: /data/features/alpha/models/mlp_raw_all_targets_csdemean_bs16_lr5e-4_epoch1_train20241130_20250630_oos20250701_20260131_v1/models/ret_4h/model_ema.onnx
+          mlp_ret8h_path: /data/features/alpha/models/mlp_raw_all_targets_csdemean_bs16_lr5e-4_epoch1_train20241130_20250630_oos20250701_20260131_v1/models/ret_8h/model_ema.onnx
+          factor_inventory_path: /home/kemove/code/teletubbies/teletubbies-alpha/results/factors/alpha_inventory_1111_strict.yaml
+          symbol_manifest_path: /data/features/alpha/models/lgbm1h_mlp4h8h_equal_ensemble_r50_v1/signal/signal_manifest.json
+          artifact_sha256:
+            factor_inventory: 206c5f5351e765d604290257bf20da64e6fe3131d08b0918db0adfd7e9c58d34
+            lgbm: 321980ddb4a7fdd883b244bf37fd67afe8d4f91e39cf5dc642a93e37372dcc4d
+            mlp_ret4h: 2b94a1203fd4fb1382b7fc7bbc3f427c915b0d8e73629ce5a14639c316febe67
+            mlp_ret8h: 5f656a54f942b5810d7d85aa3f8742cba3abaf5c29e3fbc21f27e0d5d9ff8107
+          num_threads: 16
+          providers: [CPUExecutionProvider]
+
+  portfolio:
+    output:
+      parquet_mirror:
+        root_dir: /data/features/alpha/online_selected_pipeline_5m
+        queue_size: 64
+        batch_bars: 12
+        compression: zstd
+    modules:
+      - name: selected_book5m_optimizer
+        class: teletubbies_py.bar_portfolio.optimizer:ConstrainedLongShortPortfolio
+        params:
+          book_size_usd: 5000000
+          min_ready_bars: 819
+          volume_lookback_bars: 48
+          planning_participation_rate: 0.02
+          position_volume_lookback_bars: 48
+          max_position_volume_participation_rate: 0.05
+          volatility_lookback_bars: 288
+          volatility_horizon_bars: 48
+          min_volatility_observations: 96
+          risk_budget_4h_bps: 350.0
+          risk_slack_penalty: 100.0
+          turnover_cost: 0.65
+          candidate_pool_each_side: 75
+          max_name_weight: 0.01
+          max_net_weight: 0.10
+          max_turnover_weight: 1.0
+          net_penalty: 5.0

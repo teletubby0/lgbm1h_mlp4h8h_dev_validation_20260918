@@ -1,0 +1,24 @@
+# macOS
+.DS_Store
+._*
+
+# Python caches and virtual environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Local credentials
+.env
+.env.*
+!.env.example
+!.env.sample
+.ssh/
+.aws/
+*.pem
+*.key
+id_ed25519*
+id_rsa*

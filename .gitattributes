@@ -1,0 +1,2 @@
+# Preserve delivery bytes so SHA256 manifests remain valid on every platform.
+* -text
